@@ -26,9 +26,7 @@ const initializeFun = () => {
   return {
     token,
     isLoggedIn,
-    authenticationModalOpen: false,
     loginStatus: "idle",
-    socialSignInStatus: "idle",
   };
 };
 
@@ -93,17 +91,6 @@ export const userSlice = createSlice({
       state.isLoggedIn = false;
       state.token = "";
     },
-    openAuthenticationModal: (state) => {
-      state.authenticationModalOpen = true;
-    },
-    closeAuthenticationModal: (state) => {
-      state.authenticationModalOpen = false;
-    },
-    resetLoginState: (state) => {
-      if (state.loginStatus !== "idle") {
-        state.loginStatus = "idle";
-      }
-    },
   },
   extraReducers(builder) {
     builder
@@ -115,41 +102,20 @@ export const userSlice = createSlice({
         state.loginStatus = "succeeded";
         state.token = action.payload.token;
         state.isLoggedIn = true;
-        state.authenticationModalOpen = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loginStatus = "failed";
-      })
-
-      .addCase(socialSignIn.pending, (state, action) => {
-        state.socialSignInStatus = "loading";
-      })
-      .addCase(socialSignIn.fulfilled, (state, action) => {
-        state.socialSignInStatus = "succeeded";
-        state.token = action.payload.token;
-        state.isLoggedIn = true;
-        state.authenticationModalOpen = false;
-      })
-      .addCase(socialSignIn.rejected, (state, action) => {
-        state.socialSignInStatus = "failed";
       });
   },
 });
 
 const selectIsLoggedIn = (state: RootState) => state.user.isLoggedIn;
 const selectLoginStatus = (state: RootState) => state.user.loginStatus;
-const selectSocialSignInStatus = (state: RootState) =>
-  state.user.socialSignInStatus;
 
-export { selectIsLoggedIn, selectLoginStatus, selectSocialSignInStatus };
+export { selectIsLoggedIn, selectLoginStatus };
 
 export { loginUser, socialSignIn };
 
-export const {
-  logoutUser,
-  openAuthenticationModal,
-  closeAuthenticationModal,
-  resetLoginState,
-} = userSlice.actions;
+export const { logoutUser } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -2,10 +2,10 @@ import { FormValues } from "./AddNewBook";
 
 export const newBookDataTransform = (formValues: FormValues) => {
   const { year, availableChapters, departments } = formValues;
-  const yearArray = year.split(",").map((year) => year.trim());
+  const yearArray = year.split(",").map((year) => parseInt(year.trim()));
   const availableChaptersArray = availableChapters
     .split(",")
-    .map((chapter) => chapter.trim());
+    .map((chapter) => parseInt(chapter.trim()));
   const departmentsArray = departments
     .split(",")
     .map((department) => department.trim());
@@ -15,7 +15,7 @@ export const newBookDataTransform = (formValues: FormValues) => {
     year: yearArray,
     availableChapters: availableChaptersArray,
     departments: departmentsArray,
-    amountInStock: parseInt(formValues.amountInStock) || -1,
-    price: parseInt(formValues.price) || -1,
+    amountInStock: parseInt(formValues.amountInStock),
+    price: parseInt(formValues.price),
   };
 };

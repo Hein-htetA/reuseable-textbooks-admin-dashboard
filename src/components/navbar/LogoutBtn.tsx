@@ -1,15 +1,15 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { openAuthenticationModal } from "../../features/user/userSlice";
+import { logoutUser } from "../../features/user/userSlice";
 
 const LogoutBtn = () => {
   const dispatch = useDispatch();
   return (
     <button
       className="text-xs px-2 py-1 border-2 border-slate-600 rounded-lg w-fit"
-      onClick={() => dispatch(openAuthenticationModal())}
+      onClick={() => dispatch(logoutUser())}
     >
-      <div>Logout</div>
+      Logout
     </button>
   );
 };

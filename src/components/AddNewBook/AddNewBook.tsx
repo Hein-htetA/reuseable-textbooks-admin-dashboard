@@ -1,63 +1,12 @@
 import React, { ChangeEvent, useState } from "react";
+import { useAppDispatch } from "../../app/hooks";
+import { uploadBook } from "../../features/book/bookSlice";
 import AddNewBookBtn from "./AddNewBookBtn";
 import { newBookDataTransform } from "./NewBookDataTransform";
+import UploadReturnMessage from "./UploadReturnMessage";
 import { validateNewBookInfo } from "./ValidateNewBookInfo";
-
-// interface SingleDepartmentInterface {
-//   fullName: string;
-//   shortName: string;
-// }
-
-// export const departmentList: SingleDepartmentInterface[] = [
-//   {
-//     fullName: "Architecture",
-//     shortName: "Arch",
-//   },
-//   {
-//     fullName: "Civil Engineering",
-//     shortName: "C",
-//   },
-//   {
-//     fullName: "Chemical Engineering",
-//     shortName: "ChE",
-//   },
-//   {
-//     fullName: "Computer Engineering and Information Technology",
-//     shortName: "CEIT",
-//   },
-//   {
-//     fullName: "Electronic Engineering",
-//     shortName: "EC",
-//   },
-//   {
-//     fullName: "Electrical Power Engineering",
-//     shortName: "EP",
-//   },
-//   {
-//     fullName: "Food Engineering",
-//     shortName: "FE",
-//   },
-//   {
-//     fullName: "Mechanical Engineering",
-//     shortName: "Mech",
-//   },
-//   {
-//     fullName: "Mechatronic Engineering",
-//     shortName: "McE",
-//   },
-//   {
-//     fullName: "Metallurgical Engineering",
-//     shortName: "Met",
-//   },
-//   {
-//     fullName: "Mining Engineering",
-//     shortName: "Mn",
-//   },
-//   {
-//     fullName: "Textile Engineering",
-//     shortName: "Tex",
-//   },
-// ];
+import Resizer from "react-image-file-resizer";
+import { defaultBookImg } from "../../url";
 
 export interface FormValues {
   title: string;
@@ -67,10 +16,27 @@ export interface FormValues {
   year: string;
   availableChapters: string;
   departments: string;
-  ownerName: string;
-  ownerRollNo: string;
+  lastOwnerName: string;
+  lastOwnerRollNo: string;
   amountInStock: string;
+  bookImage: string;
 }
+
+export const resizeFile = (file: Blob) =>
+  new Promise((resolve) => {
+    Resizer.imageFileResizer(
+      file,
+      800,
+      800,
+      "JPEG",
+      90,
+      0,
+      (uri) => {
+        resolve(uri);
+      },
+      "base64"
+    );
+  });
 
 const inputClass =
   "px-2 py-1 border-2 border-slate-500 rounded-lg outline-none w-full";
@@ -86,9 +52,10 @@ const AddNewBook = () => {
     year: "",
     availableChapters: "",
     departments: "",
-    ownerName: "",
-    ownerRollNo: "",
+    lastOwnerName: "",
+    lastOwnerRollNo: "",
     amountInStock: "",
+    bookImage: "",
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -99,21 +66,49 @@ const AddNewBook = () => {
     yearError: false,
     availableChaptersError: false,
     departmentsError: false,
-    ownerNameError: false,
-    ownerRollNoError: false,
+    lastOwnerNameError: false,
+    lastOwnerRollNoError: false,
     amountInStockError: false,
+    imageError: false,
   });
+
+  const dispatch = useAppDispatch();
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
+  };
+
+  const onChangeImage = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files![0].size > 9000000) {
+      setFormErrors({ ...formErrors, imageError: true });
+      return;
+    }
+    try {
+      const image = (await resizeFile(e.target.files![0])) as string;
+      setFormValues({ ...formValues, bookImage: image });
+      setFormErrors({
+        ...formErrors,
+        imageError: false,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const removePhoto = () => {
+    setFormValues({
+      ...formValues,
+      bookImage: "",
+    });
   };
 
   const handleNewBookUpload = () => {
     const formValuesAfterTransform = newBookDataTransform(formValues);
     const errors = validateNewBookInfo(formValuesAfterTransform);
     setFormErrors(errors);
+    // console.log("form after transform", formValuesAfterTransform);
     if (Object.keys(errors).length === 0) {
-      console.log("uploading...book");
+      dispatch(uploadBook(formValuesAfterTransform));
     }
   };
 
@@ -122,6 +117,31 @@ const AddNewBook = () => {
       <h1 className="text-center text-lg px-3 mb-3 py-2 border-2 border-slate-500 rounded-xl">
         Add A New Book
       </h1>
+      <img
+        src={formValues.bookImage || defaultBookImg}
+        alt="uploadImg"
+        className="w-40 rounded-lg aspect-[3/4] mx-auto object-cover"
+      />
+      <div className="flex justify-center gap-3">
+        <label htmlFor="inputTag">
+          <div className="px-3 py-2 text-white bg-gray-600 rounded-lg">
+            Add Photo
+          </div>
+          <input
+            id="inputTag"
+            type="file"
+            accept="image/png, image/jpg, image/gif, image/jpeg"
+            onChange={onChangeImage}
+            style={{ display: "none" }}
+          />
+        </label>
+        <button
+          className="px-3 py-2 bg-red-400 text-white rounded-lg"
+          onClick={removePhoto}
+        >
+          Remove
+        </button>
+      </div>
       <div className="grid grid-cols-[auto_1fr] gap-x-1 items-center">
         <div>Title - </div>
         <input
@@ -198,20 +218,24 @@ const AddNewBook = () => {
       <div className="grid grid-cols-[max-content_1fr] gap-x-1 items-center">
         <div>Owner Name - </div>
         <input
-          className={formErrors.ownerNameError ? inputErrorClass : inputClass}
+          className={
+            formErrors.lastOwnerNameError ? inputErrorClass : inputClass
+          }
           placeholder="Enter Last Owner's Name"
-          name="ownerName"
-          value={formValues.ownerName}
+          name="lastOwnerName"
+          value={formValues.lastOwnerName}
           onChange={onChangeInput}
         />
       </div>
       <div className="grid grid-cols-[max-content_1fr] gap-x-1 items-center">
         <div>Owner Roll No - </div>
         <input
-          className={formErrors.ownerRollNoError ? inputErrorClass : inputClass}
+          className={
+            formErrors.lastOwnerRollNoError ? inputErrorClass : inputClass
+          }
           placeholder="Enter Last Owner's Roll Number"
-          name="ownerRollNo"
-          value={formValues.ownerRollNo}
+          name="lastOwnerRollNo"
+          value={formValues.lastOwnerRollNo}
           onChange={onChangeInput}
         />
       </div>
@@ -230,6 +254,8 @@ const AddNewBook = () => {
       </div>
 
       <AddNewBookBtn handleNewBookUpload={handleNewBookUpload} />
+
+      <UploadReturnMessage />
     </div>
   );
 };

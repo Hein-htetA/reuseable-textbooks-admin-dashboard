@@ -1,13 +1,13 @@
 interface FormValues {
-  year: string[];
-  availableChapters: string[];
+  year: number[];
+  availableChapters: number[];
   departments: string[];
   title: string;
   author: string;
   edition: string;
   price: number;
-  ownerName: string;
-  ownerRollNo: string;
+  lastOwnerName: string;
+  lastOwnerRollNo: string;
   amountInStock: number;
 }
 
@@ -39,16 +39,16 @@ export const validateNewBookInfo = (formValues: FormValues) => {
   const { year, availableChapters, departments, price, amountInStock } =
     formValues;
 
-  if (price < 0) {
+  if (price < 0 || !price) {
     errors.priceError = true;
   }
 
-  if (amountInStock < 0) {
+  if (amountInStock < 0 || !amountInStock) {
     errors.amountInStockError = true;
   }
 
   year.every((year) => {
-    if (parseInt(year) > 7) {
+    if (year > 7 || !year) {
       errors.yearError = true;
       return false;
     }
@@ -56,7 +56,7 @@ export const validateNewBookInfo = (formValues: FormValues) => {
   });
 
   availableChapters.every((chapter) => {
-    if (chapter.length > 2) {
+    if (chapter > 99 || !chapter) {
       errors.availableChaptersError = true;
       return false;
     }
