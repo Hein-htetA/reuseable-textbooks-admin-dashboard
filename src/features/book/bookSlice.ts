@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { useAppSelector } from "../../app/hooks";
 import { RootState } from "../../app/store";
 import { baseUrl } from "../../url";
 
@@ -36,7 +35,8 @@ interface InitialState {
   addedBook: Book;
   addNewBookStatus: "idle" | "loading" | "succeeded" | "updated" | "failed";
   searchResults: Book[];
-  searchStatus: "idle" | "loading" | "succeeded" | "updated" | "failed";
+  searchStatus: "idle" | "loading" | "succeeded" | "failed";
+  updateStatus: "idle" | "loading" | "succeeded" | "failed";
 }
 
 const initialState: InitialState = {
@@ -58,6 +58,7 @@ const initialState: InitialState = {
   addNewBookStatus: "idle",
   searchResults: [],
   searchStatus: "idle",
+  updateStatus: "idle",
 };
 
 const uploadBook = createAsyncThunk<
@@ -81,6 +82,32 @@ const uploadBook = createAsyncThunk<
     }
     const { addedNewBook, status } = await response.json();
     return { addedNewBook, status };
+  } catch (error) {
+    return rejectWithValue("");
+  }
+});
+
+const updateBook = createAsyncThunk<
+  Book,
+  Book,
+  { rejectValue: string; state: RootState }
+>("book/updateBook", async (formValues, { rejectWithValue, getState }) => {
+  const requestOptions = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getState().user.token}`,
+    },
+    body: JSON.stringify(formValues),
+  };
+
+  try {
+    const response = await fetch(`${baseUrl}/book`, requestOptions);
+    if (!response.ok) {
+      throw new Error();
+    }
+    const { updatedBook } = await response.json();
+    return updatedBook;
   } catch (error) {
     return rejectWithValue("");
   }
@@ -112,7 +139,11 @@ const searchBookByTitle = createAsyncThunk<
 const bookSlice = createSlice({
   name: "book",
   initialState,
-  reducers: {},
+  reducers: {
+    resetUpdateStatus: (state) => {
+      state.updateStatus = "idle";
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(uploadBook.pending, (state, action) => {
@@ -129,6 +160,20 @@ const bookSlice = createSlice({
       })
       .addCase(uploadBook.rejected, (state, action) => {
         state.addNewBookStatus = "failed";
+      })
+
+      .addCase(updateBook.pending, (state, action) => {
+        state.updateStatus = "loading";
+      })
+      .addCase(updateBook.fulfilled, (state, action) => {
+        state.updateStatus = "succeeded";
+        const index = state.searchResults.findIndex(
+          (book) => book._id === action.payload._id
+        );
+        state.searchResults[index] = action.payload;
+      })
+      .addCase(updateBook.rejected, (state, action) => {
+        state.updateStatus = "failed";
       })
 
       .addCase(searchBookByTitle.pending, (state, action) => {
@@ -149,14 +194,18 @@ const SelectAddNewBookStatus = (state: RootState) =>
   state.book.addNewBookStatus;
 const SelectSearchStatus = (state: RootState) => state.book.searchStatus;
 const SelectSearchResults = (state: RootState) => state.book.searchResults;
+const SelectUpdateStatus = (state: RootState) => state.book.updateStatus;
 
 export {
   SelectAddedBook,
   SelectAddNewBookStatus,
   SelectSearchResults,
   SelectSearchStatus,
+  SelectUpdateStatus,
 };
 
-export { uploadBook, searchBookByTitle };
+export { uploadBook, searchBookByTitle, updateBook };
+
+export const { resetUpdateStatus } = bookSlice.actions;
 
 export default bookSlice.reducer;

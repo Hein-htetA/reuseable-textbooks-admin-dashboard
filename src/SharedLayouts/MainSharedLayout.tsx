@@ -1,6 +1,8 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Outlet, Navigate } from "react-router-dom";
 import Navbar from "../components/navbar/Navbar";
+import { selectIsLoggedIn } from "../features/user/userSlice";
 import ScrollToTop from "./ScrollToTop";
 
 const MainSharedLayout = () => {

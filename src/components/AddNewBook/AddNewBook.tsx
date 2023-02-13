@@ -7,6 +7,9 @@ import UploadReturnMessage from "./UploadReturnMessage";
 import { validateNewBookInfo } from "./ValidateNewBookInfo";
 import Resizer from "react-image-file-resizer";
 import { defaultBookImg } from "../../url";
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
+import { selectIsLoggedIn } from "../../features/user/userSlice";
 
 export interface FormValues {
   title: string;
@@ -74,6 +77,8 @@ const AddNewBook = () => {
 
   const dispatch = useAppDispatch();
 
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
   };
@@ -111,6 +116,10 @@ const AddNewBook = () => {
       dispatch(uploadBook(formValuesAfterTransform));
     }
   };
+
+  if (!isLoggedIn) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className="flex flex-col p-5 gap-3 text-sm">
@@ -188,7 +197,7 @@ const AddNewBook = () => {
           className={formErrors.yearError ? inputErrorClass : inputClass}
           placeholder="1,2,3"
           name="year"
-          value={formValues.year.toString()}
+          value={formValues.year}
           onChange={onChangeInput}
         />
       </div>
@@ -201,7 +210,7 @@ const AddNewBook = () => {
           }
           placeholder="1,2,3,4,5"
           name="availableChapters"
-          value={formValues.availableChapters.toString()}
+          value={formValues.availableChapters}
           onChange={onChangeInput}
         />
       </div>
@@ -211,7 +220,7 @@ const AddNewBook = () => {
           className={formErrors.departmentsError ? inputErrorClass : inputClass}
           placeholder="McE, Mech, EP, C"
           name="departments"
-          value={formValues.departments.toString()}
+          value={formValues.departments}
           onChange={onChangeInput}
         />
       </div>
