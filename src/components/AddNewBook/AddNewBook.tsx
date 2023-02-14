@@ -106,6 +106,7 @@ const AddNewBook = () => {
       bookImage: "",
     });
   };
+  console.log("errors", formErrors);
 
   const handleNewBookUpload = () => {
     const formValuesAfterTransform = newBookDataTransform(formValues);

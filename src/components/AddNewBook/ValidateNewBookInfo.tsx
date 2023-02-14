@@ -30,7 +30,12 @@ export const validateNewBookInfo = (formValues: FormValues) => {
   const errors: any = {};
 
   for (const property in formValues) {
-    if ((formValues as any)[property].toString().trim().length === 0) {
+    if (
+      (formValues as any)[property].toString().trim().length === 0 &&
+      property !== "lastOwnerName" &&
+      property !== "lastOwnerRollNo" &&
+      property !== "bookImage"
+    ) {
       //toString() is for year,chapters,departments arrays and price,amountInStock number
       (errors as any)[`${property}Error`] = true;
     }

@@ -4,6 +4,7 @@ import { useAppDispatch } from "../../app/hooks";
 import { resetUpdateStatus, updateBook } from "../../features/book/bookSlice";
 import { defaultBookImg } from "../../url";
 import { resizeFile } from "../AddNewBook/AddNewBook";
+import AddPhotoBtn from "./AddPhotoBtn";
 import UpdateBookBtn from "./UpdateBookBtn";
 import { updateBookDataTransform } from "./UpdateBookDataTransform";
 import { validateUpdateBookInfo } from "./ValidateUpdateBookInfo";
@@ -113,26 +114,7 @@ const SingleBookDetails = () => {
         alt="uploadImg"
         className="w-40 rounded-lg aspect-[3/4] mx-auto object-cover"
       />
-      <div className="flex justify-center gap-3">
-        <label htmlFor="inputTag">
-          <div className="px-3 py-2 text-white bg-gray-600 rounded-lg">
-            Add Photo
-          </div>
-          <input
-            id="inputTag"
-            type="file"
-            accept="image/png, image/jpg, image/gif, image/jpeg"
-            onChange={onChangeImage}
-            style={{ display: "none" }}
-          />
-        </label>
-        <button
-          className="px-3 py-2 bg-red-400 text-white rounded-lg"
-          onClick={removePhoto}
-        >
-          Remove
-        </button>
-      </div>
+      <AddPhotoBtn onChangeImage={onChangeImage} removePhoto={removePhoto} />
       <div className="grid grid-cols-[auto_1fr] gap-x-1 items-center">
         <div>Title - </div>
         <input

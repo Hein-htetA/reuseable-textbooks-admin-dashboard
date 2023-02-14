@@ -9,6 +9,7 @@ import ManageOrders from "./components/ManageOrders/ManageOrders";
 import SingleBookDetails from "./components/EditExistingBooks/SingleBookDetails";
 import EditBooksSharedLayout from "./SharedLayouts/EditBooksSharedLayout";
 import BooksInList from "./components/EditExistingBooks/BooksInList";
+import OrderBookDetails from "./components/ManageOrders/OrderBookDetails";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="details" element={<SingleBookDetails />} />
           </Route>
           <Route path="/orders" element={<ManageOrders />} />
+          <Route path="/orders/book-details" element={<OrderBookDetails />} />
         </Route>
       </Routes>
     </BrowserRouter>

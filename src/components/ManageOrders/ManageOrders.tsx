@@ -1,52 +1,48 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import {
+  SelectOrders,
+  SelectOrderStatus,
+} from "../../features/order/orderSlice";
+import SingleBook from "../EditExistingBooks/SingleBook";
+import SearchOrders from "./SearchOrders";
+import SingleOrder from "./SingleOrder";
+import { ImSpinner2 } from "react-icons/im";
 
 const ManageOrders = () => {
+  const orders = useSelector(SelectOrders);
+  const orderStatus = useSelector(SelectOrderStatus);
+
   return (
-    <div className="p-5 flex flex-col gap-2 items-center">
-      <div className="flex gap-2 justify-between items-center mb-1 max-w-md w-full">
-        <div className="flex items-center gap-1">
-          <label htmlFor="start" className="font-bold">
-            Start
-          </label>
-          <input
-            type="date"
-            name="start"
-            className="border-2 border-slate-500 px-2 rounded-lg mr-2 text-xs"
+    <div className="p-5">
+      <SearchOrders />
+      <div className="flex flex-col gap-4">
+        {orderStatus === "succeeded" && orders.length === 0 && (
+          <div className="text-lg font-bold text-center my-10">No Results</div>
+        )}
+        {orderStatus === "loading" && (
+          <div className="my-10 mx-auto w-fit">
+            <ImSpinner2 className="animate-spin text-5xl text-slate-500" />
+          </div>
+        )}
+        {orders.map((order) => (
+          <SingleOrder
+            key={order._id}
+            _id={order._id}
+            books={order.books}
+            status={order.status}
+            orderId={order._id}
+            date={order.createdAt}
+            totalAmount={order.totalAmount}
+            customerName={order.customerName}
+            facebook={order.facebook}
+            viber={order.viber}
+            phone={order.phone}
+            telegram={order.telegram}
+            updateStatus={order.updateStatus}
           />
-        </div>
-        <div className="flex items-center gap-1">
-          <label htmlFor="end" className="font-bold">
-            End
-          </label>
-          <input
-            type="date"
-            name="end"
-            className="border-2 border-slate-500 px-2 rounded-lg text-xs"
-          />
-        </div>
+        ))}
       </div>
-      <div className="flex gap-2 justify-between items-center mb-1 max-w-md w-full text-sm">
-        <div className="flex items-center gap-1 text-red-500 font-bold">
-          <input type="radio" id="canceled" name="status" checked />
-          <label htmlFor="status">Canceled</label>
-        </div>
-
-        <div className="flex items-center gap-1 text-pink-500 font-bold">
-          <input type="radio" id="pending" name="status" />
-          <label htmlFor="pending">Pending</label>
-        </div>
-
-        <div className="flex items-center gap-1 text-green-500 font-bold">
-          <input type="radio" id="completed" name="status" />
-          <label htmlFor="completed">Completed</label>
-        </div>
-      </div>
-      <div className="flex gap-2 justify-end items-center mb-1 max-w-md w-full">
-        <button className="w-40 bg-slate-500 text-white rounded-lg self-end py-1 text-sm">
-          LOAD
-        </button>
-      </div>
-      <div className="w-full h-[1px] bg-slate-500 my-3 "></div>
     </div>
   );
 };
