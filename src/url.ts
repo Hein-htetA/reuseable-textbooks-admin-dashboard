@@ -1,4 +1,5 @@
-export const baseUrl = "http://localhost:5000/api/v1";
+//export const baseUrl = "http://localhost:5000/api/v1";
+export const baseUrl = "https://ytu-bookshelf.onrender.com/";
 
 export const defaultAvator =
   "https://ytu-reuseable-textbooks.s3.ap-southeast-1.amazonaws.com/default-avatar.png";

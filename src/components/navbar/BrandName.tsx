@@ -8,8 +8,8 @@ const BrandName = () => {
       <span className="font-[Libre-Baskerville,serif] text-3xl text-slate-700">
         YTU
       </span>
-      <span className="font-[Marck-Script,cursive] text-base text-slate-700">
-        Reuseable Textbooks
+      <span className="font-[Marck-Script,cursive] text-lg text-slate-700 tracking-wide">
+        Bookshelf
       </span>
     </div>
   );
