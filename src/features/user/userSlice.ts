@@ -94,7 +94,6 @@ export const userSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-
       .addCase(loginUser.pending, (state, action) => {
         state.loginStatus = "loading";
       })

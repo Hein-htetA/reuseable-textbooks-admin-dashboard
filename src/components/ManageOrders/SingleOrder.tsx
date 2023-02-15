@@ -57,7 +57,7 @@ const SingleOrder = ({
 
   const onChangeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelect(e.target.value);
-    dispatch(updateOrder({ orderId: _id, status: select }));
+    dispatch(updateOrder({ orderId: _id, status: e.target.value }));
   };
 
   const handleCopy = async (text: string, field: string) => {
