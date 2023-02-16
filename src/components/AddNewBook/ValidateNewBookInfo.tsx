@@ -44,7 +44,8 @@ export const validateNewBookInfo = (formValues: FormValues) => {
   const { year, availableChapters, departments, price, amountInStock } =
     formValues;
 
-  if (price < 0 || !price) {
+  if (price >= 0) {
+  } else {
     errors.priceError = true;
   }
 
