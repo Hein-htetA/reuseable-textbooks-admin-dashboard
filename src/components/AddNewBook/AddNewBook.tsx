@@ -175,7 +175,7 @@ const AddNewBook = () => {
         <div>Edition - </div>
         <input
           className={formErrors.editionError ? inputErrorClass : inputClass}
-          placeholder="Twelveth Edition"
+          placeholder="Second Edition"
           name="edition"
           value={formValues.edition}
           onChange={onChangeInput}

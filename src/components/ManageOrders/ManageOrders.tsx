@@ -8,10 +8,18 @@ import SingleBook from "../EditExistingBooks/SingleBook";
 import SearchOrders from "./SearchOrders";
 import SingleOrder from "./SingleOrder";
 import { ImSpinner2 } from "react-icons/im";
+import { selectIsLoggedIn } from "../../features/user/userSlice";
+import { Navigate } from "react-router-dom";
 
 const ManageOrders = () => {
   const orders = useSelector(SelectOrders);
   const orderStatus = useSelector(SelectOrderStatus);
+
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+
+  if (!isLoggedIn) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className="p-5">
